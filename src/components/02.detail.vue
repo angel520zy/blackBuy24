@@ -13,7 +13,13 @@
                 <div class="wrap-box">
                     <div class="left-925">
                         <div class="goods-box clearfix">
-                            <div class="pic-box"></div>
+                            <div class="pic-box">
+                            <!-- 放大镜组件 -->
+                            <ProductZoomer v-if="images.normal_size.length!=0"
+                                :base-images="images"
+                                :base-zoomer-options="zoomerOptions"
+                            />
+                            </div>
                             <div class="goods-spec">
                                 <h1>{{goodsinfo.title}}</h1>
                                 <p class="subtitle">{{goodsinfo.sub_title}}</p>
@@ -41,7 +47,10 @@
                                         <dd>
                                             <div class="stock-box">
                                                 <!-- 绑定了数据  @change 改变 :min 最小值 :max 最大值  -->
-                                                <el-input-number v-model="buyCount" :min="1" :max="goodsinfo.stock_quantity"></el-input-number>
+                                                <el-input-number 
+                                                v-model="buyCount" 
+                                                :min="1" 
+                                                :max="goodsinfo.stock_quantity"></el-input-number>
                                             </div>
                                             <span class="stock-txt">
                                                 库存
@@ -52,8 +61,12 @@
                                     <dl>
                                         <dd>
                                             <div id="buyButton" class="btn-buy">
-                                                <button onclick="cartAdd(this,'/',1,'/shopping.html');" class="buy">立即购买</button>
-                                                <button onclick="cartAdd(this,'/',0,'/cart.html');" class="add">加入购物车</button>
+                                                <button 
+                                                onclick="cartAdd(this,'/',1,'/shopping.html');" 
+                                                class="buy">立即购买</button>
+                                                <button 
+                                                @click="add2Cart" 
+                                                class="add">加入购物车</button>
                                             </div>
                                         </dd>
                                     </dl>
@@ -85,11 +98,23 @@
                                         </div>
                                         <div class="conn-box">
                                             <div class="editor">
-                                                <textarea id="txtContent" name="txtContent" sucmsg=" " datatype="*10-1000" nullmsg="请填写评论内容！"></textarea>
+                                                <textarea 
+                                                v-model.trim="comment" 
+                                                id="txtContent" 
+                                                name="txtContent" 
+                                                sucmsg=" " 
+                                                datatype="*10-1000" 
+                                                nullmsg="请填写评论内容！"></textarea>
                                                 <span class="Validform_checktip"></span>
                                             </div>
                                             <div class="subcon">
-                                                <input id="btnSubmit" name="submit" type="submit" value="提交评论" class="submit">
+                                                <input 
+                                                @click="submitComment" 
+                                                id="btnSubmit" 
+                                                name="submit" 
+                                                type="submit" 
+                                                value="提交评论" 
+                                                class="submit">
                                                 <span class="Validform_checktip"></span>
                                             </div>
                                         </div>
@@ -112,7 +137,16 @@
                                     </ul>
                                     <div class="page-box" style="margin: 5px 0px 0px 62px;">
                                         <!-- 使用iView的分页组件 -->
-                                        <Page :total="totalcount" show-sizer show-elevator @on-change="pageChange" placement="top" :page-size-opts="[6,8,12]" :page-size="pageSize" />
+                                        <Page 
+                                        :current="pageIndex"
+                                        :total="totalcount" 
+                                        show-sizer 
+                                        show-elevator 
+                                        @on-page-size-change="sizeChange"
+                                        @on-change="pageChange" 
+                                        placement="top" 
+                                        :page-size-opts="[6,8,12]" 
+                                        :page-size="pageSize" />
                                     </div>
                                 </div>
                             </div>
@@ -180,7 +214,24 @@ export default {
       // 评论内容
       comments: [],
       // 总评论数
-      totalcount: 0
+      totalcount: 0,
+      comment:'',
+        // 放大镜数据
+      images: {
+        // required
+        normal_size: [
+        ]
+      },
+      // 放大镜的设置
+      zoomerOptions: {
+        zoomFactor: 4,
+        pane: "container-round",
+        hoverDelay: 300,
+        namespace: "inline-zoomer",
+        move_by_click: true,
+        scroll_items: 5,
+        choosed_thumb_border_color: "#bbdefb"
+      }
     };
   },
   // 事件
@@ -204,6 +255,14 @@ export default {
           this.hotgoodslist = result.data.message.hotgoodslist;
           //   图片列表
           this.imglist = result.data.message.imglist;
+          // 设置给 放大镜的数据即可
+          this.images.normal_size = [];
+          this.imglist.forEach(v=>{
+              this.images.normal_size.push({
+                  id:v.id,
+                  url:v.original_path
+              })
+          })
         });
         // 调用获取评论的方法
         this.getComments();
@@ -225,12 +284,46 @@ export default {
           this.totalcount = result.data.totalcount;
         });
     },
-    // 页码改变
+     // 页码改变
     pageChange(pageIndex) {
     //   console.log(pageSize);
       this.pageIndex = pageIndex;
       // 重新获取这一页的数据
       this.getComments();
+    },
+    // 页容量改变
+    sizeChange(pageSize) {
+      // console.log(pageSize);
+      this.pageSize = pageSize;
+      // 重新获取评论数据即可
+      this.getComments();
+    },
+    submitComment(){
+       if(this.comment==''){
+           this.$Message.warning('请输入评论内容再发表');
+       }else{
+           this.$axios
+           .post(`site/validate/comment/post/goods/${this.artID} `,{
+               commenttxt:this.comment
+           }).then(result=>{
+               if(result.data.status==0){
+                   this.$Message.success(result.data.message);
+                   this.comment='';
+                   this.pageIndex=1;
+                   this.getComments();
+               }else{
+
+               }
+           })
+       }
+    },
+   
+    add2Cart(){
+        this.$store.commit('add2Cart',{
+            goodId:this.artID,
+            goodNum:this.buyCount
+
+        })
     }
   },
   // 生命周期函数
@@ -244,6 +337,7 @@ export default {
       //   console.log('数据变了');
       // 重新获取数据即可
       //   this.created();
+      this.images.normal_size=[];
       // 初始化数据
       this.initData();
     }
@@ -259,5 +353,13 @@ export default {
   font-size: 100px;
   display: block;
   transform: rotateZ(-45deg);
+}
+.inline-zoomer-zoomer-box{
+    width: 395px;
+    /* height: 320px; */
+}
+.thumb-list img{
+    width: 100px;
+    height: 100px;
 }
 </style>

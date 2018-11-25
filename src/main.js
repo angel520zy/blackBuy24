@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Vue from "vue";
 import App from "./App.vue";
 
@@ -14,13 +15,19 @@ import iView from 'iview';
 import 'iview/dist/styles/iview.css';
 // 注册到Vue上
 Vue.use(iView);
+// 放大镜组件
+import ProductZoomer from 'vue-product-zoomer'
+Vue.use(ProductZoomer)
+
 
 // 导入 axios
 // 类似于 vue-resource this.$http
-import axios from 'axios'
+import axios from 'axios';
+Vue.prototype.$axios=axios;
+axios.defaults.baseURL='http://111.230.232.110:8899/';
 // 设置到Vue的原型上 那么所有Vue实例化出来的对象 和组件都能够共享这个属性
 // 一般来说 设置到原型上的 属性 Vue中 会使用$作为前缀 用来区分普通的属性
-Vue.prototype.$axios = axios;
+
 
 // 导入 路由
 import VueRouter from "vue-router";
@@ -32,6 +39,7 @@ import "./assets/site/css/style.css";
 // 导入每一个页面的 组件
 import index from "./components/index.vue";
 import detail from "./components/02.detail.vue";
+import shopCart from "./components/03.shopCart.vue";
 
 // 写路由规则
 let routes = [
@@ -48,6 +56,11 @@ let routes = [
   {
     path: "/detail/:artID",
     component: detail
+  },
+  // 购物车的跳转
+  {
+    path: "/shopCart",
+    component: shopCart
   }
 ];
 
@@ -73,9 +86,55 @@ Vue.filter("shortTimePlus", value => {
   return moment(value).format("YYYY/MM/DD HH:mm:ss");
 });
 
+
+import Vuex from 'vuex'
+
+Vue.use(Vuex)
+const store = new Vuex.Store({
+  state: {
+    //短路运算
+    cartData:JSON.parse(window.localStorage.getItem('hm24'))||{
+      90:6,
+      84:7
+    }
+  },
+  getters: {
+    totalCount(state){
+      let num=0;
+      for(const key in state.cartData){
+        num+=state.cartData[key]
+      }
+      return num;
+    }
+  },
+  mutations: {
+    // increment (state) {
+    //   console.log("触发了")
+    //   state.count++
+    // }
+    add2Cart(state,obj){
+      if(state.cartData[obj.goodId]!=undefined){
+       
+        state.cartData[obj.goodId]+=obj.goodNum
+        // 上面那句扩写
+        // let oldNum = state.cartData[obj.goodId];
+        // oldNum+=obj.goodNum;
+        // state.cartData[obj.goodId]=oldNum;
+      }else{
+        Vue.set(state.cartData, obj.goodId, obj.goodNum)
+      }
+      console.log(state);
+    }
+  }
+})
+//浏览器关闭保存数据
+window.onbeforeunload=function(){
+  window.localStorage.setItem('hm24',JSON.stringify(store.state.cartData))
+}
 // 实例化Vue
 new Vue({
   render: h => h(App),
   // 传入路由对象
-  router
+  router,
+  store
 }).$mount("#app");
