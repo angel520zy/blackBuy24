@@ -324,7 +324,15 @@ export default {
             goodNum:this.buyCount
 
         })
-    }
+        this.$notify({
+            title: 'success',
+            message: '商品加入成功',
+            type: 'success',
+            duration:1000
+        });
+    },
+   
+  
   },
   // 生命周期函数
   created() {

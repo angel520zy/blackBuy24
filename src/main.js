@@ -24,6 +24,8 @@ Vue.use(ProductZoomer)
 // 类似于 vue-resource this.$http
 import axios from 'axios';
 Vue.prototype.$axios=axios;
+// 让axios携带cookie
+axios.defaults.withCredentials=true;
 axios.defaults.baseURL='http://111.230.232.110:8899/';
 // 设置到Vue的原型上 那么所有Vue实例化出来的对象 和组件都能够共享这个属性
 // 一般来说 设置到原型上的 属性 Vue中 会使用$作为前缀 用来区分普通的属性
@@ -40,6 +42,9 @@ import "./assets/site/css/style.css";
 import index from "./components/index.vue";
 import detail from "./components/02.detail.vue";
 import shopCart from "./components/03.shopCart.vue";
+import order from "./components/04.order.vue";
+import login from "./components/05.login.vue";
+import member from "./components/06.member.vue";
 
 // 写路由规则
 let routes = [
@@ -61,6 +66,21 @@ let routes = [
   {
     path: "/shopCart",
     component: shopCart
+  },
+  //登录跳转
+  {
+    path: "/order/:ids",
+    component: order
+  },
+  //登录跳转
+  {
+    path: "/login",
+    component: login
+  },
+  //会员中心
+  {
+    path: "/member",
+    component: member
   }
 ];
 
@@ -68,6 +88,25 @@ let routes = [
 let router = new VueRouter({
   routes
 });
+// 导航守卫回调函数
+router.beforeEach((to, from, next)=>{
+  //  console.log("守卫啦");
+  console.log(from)
+  if(to.path.indexOf("/order")!=-1){
+    axios.get("site/account/islogin").then(result=>{
+     if(result.data.code=="nologin"){
+      Vue.prototype.$Message.warning("请先登录");
+      router.push('/login')
+     }else{
+       next();
+     }
+    })
+  }else{
+    next();
+  }
+
+})
+ 
 
 // 注册全局过滤器 方便使用
 // 导入 moment
@@ -93,16 +132,15 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     //短路运算
-    cartData:JSON.parse(window.localStorage.getItem('hm24'))||{
-      90:6,
-      84:7
-    }
+    cartData:JSON.parse(window.localStorage.getItem('hm24'))||{},
+    isLogin:false
   },
   getters: {
     totalCount(state){
+      console.log(state)
       let num=0;
       for(const key in state.cartData){
-        num+=state.cartData[key]
+        num += state.cartData[key]
       }
       return num;
     }
@@ -113,17 +151,28 @@ const store = new Vuex.Store({
     //   state.count++
     // }
     add2Cart(state,obj){
+      console.log(obj);
       if(state.cartData[obj.goodId]!=undefined){
        
-        state.cartData[obj.goodId]+=obj.goodNum
+        // state.cartData[obj.goodId]+=obj.goodNum
         // 上面那句扩写
-        // let oldNum = state.cartData[obj.goodId];
-        // oldNum+=obj.goodNum;
-        // state.cartData[obj.goodId]=oldNum;
+        let oldNum = state.cartData[obj.goodId];
+        oldNum += obj.goodNum;
+        state.cartData[obj.goodId]=oldNum;
       }else{
         Vue.set(state.cartData, obj.goodId, obj.goodNum)
       }
       console.log(state);
+    },
+    updateCartData(state,obj){
+      state.cartData = obj;
+
+    },
+    delGoodsById(state,id){
+      Vue.delete(state.cartData, id);
+    },
+    changeLogin(state,isLogin){
+      state.isLogin=isLogin;
     }
   }
 })
@@ -136,5 +185,15 @@ new Vue({
   render: h => h(App),
   // 传入路由对象
   router,
-  store
+  store,
+  created(){
+    axios.get("site/account/islogin").then(result=>{
+      if(result.data.code=="nologin"){
+       Vue.prototype.$Message.warning("请先登录");
+       router.push('/login')
+      }else{
+       store.state.isLogin=true;
+      }
+     })
+  }
 }).$mount("#app");

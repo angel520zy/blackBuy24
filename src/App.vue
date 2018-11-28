@@ -11,16 +11,18 @@
                         <a target="_blank" href="#"></a>
                     </div>
                     <div id="menu" class="right-box">
-                        <span style="display: none;">
-                            <a href="" class="">登录</a>
+                        <span v-show="$store.state.isLogin==false" style="display: none;">
+                            <!-- <a href="" class=""> -->
+                            <router-link to="./login">登录</router-link>
+                            <!-- </a> -->
                             <strong>|</strong>
                             <a href="" class="">注册</a>
                             <strong>|</strong>
                         </span>
-                        <span>
+                        <span  v-show="$store.state.isLogin==true">
                             <a href="" class="">会员中心</a>
                             <strong>|</strong>
-                            <a>退出</a>
+                            <a @click="logout">退出</a>
                             <strong>|</strong>
                         </span>
                         <!-- <a href="" class=""> -->
@@ -34,7 +36,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- 2.0 导航条 -->
             <div class="head-nav">
                 <div class="section">
@@ -68,7 +69,7 @@
                                 </a>
                             </li>
                             <li class="goods">
-                                <a href="" class="router-link-exact-active ">
+                                <a href="" class="router-link-exact-active">
                                     <span class="out" style="top: 0px;">购物商城</span>
                                 </a>
                             </li>
@@ -76,7 +77,14 @@
                     </div>
                     <div class="search-box">
                         <div class="input-box">
-                            <input id="keywords" name="keywords" type="text" onkeydown="if(event.keyCode==13){};" placeholder="输入关健字" x-webkit-speech="">
+                            <input
+                                id="keywords"
+                                name="keywords"
+                                type="text"
+                                onkeydown="if(event.keyCode==13){};"
+                                placeholder="输入关健字"
+                                x-webkit-speech
+                            >
                         </div>
                         <a href="javascript:;">
                             <i class="iconfont icon-search"></i>
@@ -107,30 +115,44 @@
                 </div>
                 <div class="foot-box">
                     <div class="copyright">
-                        <p>版权所有 黑马买买买 </p>
+                        <p>版权所有 黑马买买买</p>
                         <p>公司地址： 联系电话：</p>
-                        <p class="gray">Copyright © 2009-2018 itcast Corporation,All Rights Reserved.</p>
+                        <p
+                            class="gray"
+                        >Copyright © 2009-2018 itcast Corporation,All Rights Reserved.</p>
                     </div>
                     <div class="service">
                         <p>周一至周日 9:00-24:00</p>
                         <a href="#">
-                            <i class="iconfont icon-phone"></i>在线客服</a>
+                            <i class="iconfont icon-phone"></i>在线客服
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </template>
-
 <script>
 export default {
   name: "app",
-  created(){
-      console.log(this.$store.state.count)
+  created() {
+    //   console.log(this.$store.state.count);
+  },
+  methods:{
+      logout(){
+           this.$axios.get("site/account/logout").then(result=>{
+            //    console.log(result)
+            if(result.data.status==0){
+               this.$Message.success(result.data.message);
+               this.$router.push("./index");
+               this.$store.commit('changeLogin',false)
+            }
+           })
+      }
   }
 };
 </script>
 
 <style>
-    /* 这里引入 全局css 也可以 */
+/* 这里引入 全局css 也可以 */
 </style>
