@@ -123,11 +123,10 @@
                     <!--购物车底部-->
                     <div class="cart-foot clearfix">
                         <div class="right-box">
-                            <router-link to="/index">
                             <button
                                 class="button"
+                                onclick="javascript:location.href='/index.html';"
                             >继续购物</button>
-                            </router-link>
                             <router-link :to="'/order/'+selectedIds">
                             <button
                                 class="submit"

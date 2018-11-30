@@ -13,14 +13,17 @@
                     <div id="menu" class="right-box">
                         <span v-show="$store.state.isLogin==false" style="display: none;">
                             <!-- <a href="" class=""> -->
-                            <router-link to="./login">登录</router-link>
+                            <router-link to="/login">登录</router-link>
                             <!-- </a> -->
                             <strong>|</strong>
                             <a href="" class="">注册</a>
                             <strong>|</strong>
                         </span>
                         <span  v-show="$store.state.isLogin==true">
-                            <a href="" class="">会员中心</a>
+                            <!-- <a href="" class=""> -->
+                                <router-link to="/vipCenter"> 会员中心</router-link>
+                               
+                            <!-- </a> -->
                             <strong>|</strong>
                             <a @click="logout">退出</a>
                             <strong>|</strong>
@@ -142,9 +145,9 @@ export default {
       logout(){
            this.$axios.get("site/account/logout").then(result=>{
             //    console.log(result)
-            if(result.data.status==0){
+            if(result.data.status===0){
                this.$Message.success(result.data.message);
-               this.$router.push("./index");
+               this.$router.push("/index");
                this.$store.commit('changeLogin',false)
             }
            })

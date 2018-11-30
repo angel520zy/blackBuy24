@@ -51,9 +51,10 @@
                 ref="ruleForm"
                 label-width="100px"
                 class="demo-ruleForm"
+                :hide-required-asterisk="false"
               >
                 <el-form-item label="收货人姓名" prop="accept_name">
-                  <el-input v-model="ruleForm.accept_name"></el-input>
+                  <el-input class="my-input" v-model="ruleForm.accept_name"></el-input>
                 </el-form-item>
                 <el-form-item label="所属地区" prop="area">
                   <VDistpicker @selected="selectedArea"
@@ -63,16 +64,16 @@
                   ></VDistpicker>  
                 </el-form-item>
                 <el-form-item label="详细地址" prop="address">
-                  <el-input v-model="ruleForm.address"></el-input>
+                  <el-input class="my-input" v-model="ruleForm.address"></el-input>
                 </el-form-item>
                 <el-form-item label="手机号码" prop="mobile">
-                  <el-input v-model="ruleForm.mobile"></el-input>
+                  <el-input class="my-input" v-model="ruleForm.mobile"></el-input>
                 </el-form-item>
                  <el-form-item label="电子邮箱" prop="email">
-                  <el-input v-model="ruleForm.email"></el-input>
+                  <el-input class="my-input" v-model="ruleForm.email"></el-input>
                 </el-form-item>
                 <el-form-item label="邮政编码" prop="post_code">
-                  <el-input v-model="ruleForm.post_code"></el-input>
+                  <el-input class="my-input-min" v-model="ruleForm.post_code"></el-input>
                 </el-form-item>
                 <h2 class="slide-tit">
                   <span>2、支付方式</span>
@@ -81,14 +82,15 @@
                   <!--取得一个DataTable-->
                   <li>
                     <label>
-                      <input
+                      <!-- <input
                         name="payment_id"
                         type="radio"
                         onclick="paymentAmountTotal(this);"
                         value="1"
                       >
-                      <input name="payment_price" type="hidden" value="0.00">在线支付
-                      <em>手续费：0.00元</em>
+                      <input name="payment_price" type="hidden" value="0.00">在线支付 -->
+                      <el-radio v-model="ruleForm.payment_id" label="6">在线支付</el-radio>
+                      &nbsp;&nbsp;<em>手续费：0.00元</em>
                     </label>
                   </li>
                 </ul>
@@ -99,7 +101,7 @@
                   <!--取得一个DataTable-->
                   <li>
                     <label>
-                      <input
+                      <!-- <input
                         name="express_id"
                         type="radio"
                         onclick="freightAmountTotal(this);"
@@ -108,7 +110,22 @@
                         sucmsg=" "
                       >
                       <input name="express_price" type="hidden" value="20.00">顺丰快递
-                      <em>费用：20.00元</em>
+                      <em>费用：20.00元</em> -->
+                      <el-radio 
+                      v-model="ruleForm.express_id" 
+                      @change="ruleForm.expressMoment=24"
+                      label="1">顺丰</el-radio>&nbsp;&nbsp;
+                      <em>费用：24.00元</em>&nbsp;&nbsp;
+                      <el-radio 
+                      v-model="ruleForm.express_id" 
+                      @change="ruleForm.expressMoment=8"
+                      label="2">顺丰</el-radio>&nbsp;&nbsp;
+                      <em>费用：8.00元</em>&nbsp;&nbsp;
+                      <el-radio 
+                      v-model="ruleForm.express_id" 
+                      @change="ruleForm.expressMoment=10"
+                      label="3">顺丰</el-radio>&nbsp;&nbsp;
+                      <em>费用：10.00元</em>&nbsp;&nbsp;
                       <span class="Validform_checktip"></span>
                     </label>
                   </li>
@@ -164,7 +181,7 @@
                     <dl>
                       <dt>订单备注(100字符以内)</dt>
                       <dd>
-                        <textarea name="message" class="input" style="height:35px;"></textarea>
+                        <textarea v-model="ruleForm.message" name="message" class="input" style="height:35px;"></textarea>
                       </dd>
                     </dl>
                   </div>
@@ -179,15 +196,19 @@
                     </p>
                     <p>
                       运费：￥
-                      <label id="expressFee" class="price">0.00</label>元
+                      <label id="expressFee" class="price">{{ruleForm.expressMoment}}</label>元
                     </p>
                     <p class="txt-box">
                       应付总金额：￥
-                      <label id="totalAmount" class="price">2299.00</label>
+                      <label id="totalAmount" class="price">{{totalPrice+ruleForm.expressMoment}}</label>
                     </p>
                     <p class="btn-box">
-                      <a class="btn button" href="/cart.html">返回购物车</a>
-                      <a id="btnSubmit" class="btn submit">确认提交</a>
+                      <!-- <a class="btn button" href="/cart.html"> -->
+                      <router-link class="btn button" to="/shopCart">
+                      返回购物车
+                      </router-link>
+                      <!-- </a> -->
+                      <a @click="submit('ruleForm')" id="btnSubmit" class="btn submit">确认提交</a>
                     </p>
                   </div>
                 </div>
@@ -249,11 +270,11 @@ export default {
       totalCount: 0,
       totalPrice: 0,
       ruleForm: {
-        accept_name: "",
-        address: "",
-        mobile:'',
-        email:'',
-        post_code:'',
+        accept_name: "二哈",
+        address: "中粮商务公园3栋17楼",
+        mobile:'18868686688',
+        email:'6688@qq.com',
+        post_code:'440306',
         area:{
           province:{
             code:'440000',value:"广东省"
@@ -264,7 +285,11 @@ export default {
           area:{
             code:'440306',value:"宝安区"
           }
-        }
+        },
+        payment_id:"6",
+        express_id:"1",
+        expressMoment:24,
+        message:"麻烦快点帮我发哦,急用"
       },
       rules: {
         accept_name: [
@@ -291,6 +316,37 @@ export default {
     selectedArea(newArea){
       // console.log(newArea);
       this.ruleForm.area = newArea;
+    },
+    // 切换快递
+    // changeExpress(price){
+
+    // },
+    submit(formName){
+      this.$refs[formName].validate(valid=>{
+        if(valid){
+          this.ruleForm.goodsAmount=this.totalPrice;
+          this.ruleForm.goodsids=this.ids;
+          let obj={};
+          this.goodsList.forEach(v=>{
+            obj[v.id]=v.buycount;
+          })
+           // 商品对象
+          this.ruleForm.cargoodsobj = obj;
+          // 提交订单
+          this.$axios
+            .post("site/validate/order/setorder", this.ruleForm)
+            .then(result => {
+              // console.log(result);
+              this.$Message.success("订单提交成功");
+              // 跳转路由
+              this.$router.push("/payMoney/"+result.data.message.orderid);
+            });
+        } else {
+          // console.log('error submit!!');
+          this.$Message.warning("数据不完整,请检查");
+          return false;
+        }
+      })
     }
   },
   created() {
@@ -312,4 +368,10 @@ export default {
 };
 </script>
 <style>
+.my-input > .el-input__inner {
+  width: 500px;
+}
+.my-input-min > .el-input__inner {
+  width: 100px;
+}
 </style>

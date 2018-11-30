@@ -44,7 +44,10 @@ import detail from "./components/02.detail.vue";
 import shopCart from "./components/03.shopCart.vue";
 import order from "./components/04.order.vue";
 import login from "./components/05.login.vue";
-import member from "./components/06.member.vue";
+import payMoney from "./components/06.payMoney.vue";
+import paySuccess from "./components/07.paySuccess.vue";
+import vipCenter from "./components/08.vipCenter.vue";
+
 
 // 写路由规则
 let routes = [
@@ -70,18 +73,33 @@ let routes = [
   //登录跳转
   {
     path: "/order/:ids",
-    component: order
+    component: order,
+    meta: { checkLogin: true }
   },
   //登录跳转
   {
     path: "/login",
     component: login
   },
-  //会员中心
+  
+  //支付页面
   {
-    path: "/member",
-    component: member
-  }
+    path: "/payMoney/:orderId",
+    component: payMoney,
+    meta: { checkLogin: true }
+  },
+  // 支付成功
+  {
+    path: "/paySuccess",
+    component: paySuccess,
+    meta: { checkLogin: true }
+  },
+  // 会员中心
+  {
+    path: "/vipCenter",
+    component: vipCenter,
+    meta: { checkLogin: true }
+  },
 ];
 
 // 实例化路由对象
@@ -91,8 +109,9 @@ let router = new VueRouter({
 // 导航守卫回调函数
 router.beforeEach((to, from, next)=>{
   //  console.log("守卫啦");
-  console.log(from)
-  if(to.path.indexOf("/order")!=-1){
+  console.log(to)
+  // if(to.path.indexOf("/order")!=-1){
+    if(to.meta.checkLogin == true){
     axios.get("site/account/islogin").then(result=>{
      if(result.data.code=="nologin"){
       Vue.prototype.$Message.warning("请先登录");

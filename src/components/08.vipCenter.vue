@@ -6,7 +6,7 @@
                     <div class="section">
                         <div class="location">
                             <span>当前位置：</span>
-                            <a href="/index.html">首页</a>&gt;
+                            <a href="/index.html">首页</a> &gt;
                             <a href="/user/center/index.html">会员中心</a>
                         </div>
                     </div>
@@ -17,7 +17,11 @@
                                     <a href="/user/center/avatar.html" class="img-box">
                                         <i class="iconfont icon-user-full"></i>
                                     </a>
-                                    <h3>ivanyb</h3>
+                                    <h3>
+
+                                        ivanyb
+
+                                    </h3>
                                     <p>
                                         <b>注册会员</b>
                                     </p>
@@ -32,8 +36,7 @@
                                             <div class="list">
                                                 <p>
                                                     <a href="#/site/member/orderlist" class="">
-                                                        <i class="iconfont icon-arrow-right"></i>交易订单
-                                                    </a>
+                                                        <i class="iconfont icon-arrow-right"></i>交易订单</a>
                                                 </p>
                                             </div>
                                         </li>
@@ -44,35 +47,20 @@
                                             </h2>
                                             <div class="list">
                                                 <p>
-                                                    <a
-                                                        href="#/site/member/center"
-                                                        class="router-link-exact-active"
-                                                    >
-                                                        <i class="iconfont icon-arrow-right"></i>账户资料
-                                                    </a>
+                                                    <a href="#/site/member/center" class="router-link-exact-active ">
+                                                        <i class="iconfont icon-arrow-right"></i>账户资料</a>
                                                 </p>
                                                 <p>
-                                                    <a
-                                                        href="#/site/member/center"
-                                                        class="router-link-exact-active"
-                                                    >
-                                                        <i
-                                                            clrouter-linkss="iconfont icon-router-linkrrow-right"
-                                                        ></i>头像设置
-                                                    </a>
+                                                    <a href="#/site/member/center" class="router-link-exact-active ">
+                                                        <i clrouter-linkss="iconfont icon-router-linkrrow-right"></i>头像设置</a>
                                                 </p>
                                                 <p>
-                                                    <a
-                                                        href="#/site/member/center"
-                                                        class="router-link-exact-active"
-                                                    >
-                                                        <i class="iconfont icon-arrow-right"></i>修改密码
-                                                    </a>
+                                                    <a href="#/site/member/center" class="router-link-exact-active ">
+                                                        <i class="iconfont icon-arrow-right"></i>修改密码</a>
                                                 </p>
                                                 <p>
                                                     <a href="javascript:void(0)">
-                                                        <i class="iconfont icon-arrow-right"></i>退出登录
-                                                    </a>
+                                                        <i class="iconfont icon-arrow-right"></i>退出登录</a>
                                                 </p>
                                             </div>
                                         </li>
@@ -108,8 +96,7 @@
                                         <a href="/user/order-list.html">更多..</a>
                                     </span>
                                     <h3>
-                                        <i class="iconfont icon-order"></i>我的订单
-                                    </h3>
+                                        <i class="iconfont icon-order"></i>我的订单</h3>
                                 </div>
                                 <div class="center-info clearfix">
                                     <ul>
@@ -126,9 +113,16 @@
     </div>
 </template>
 <script>
-export default {
-  name: "member"
-};
+    export default{
+        name:"vipCenter"
+    }
 </script>
 <style>
+.sub-tit{
+    padding-top: 0;
+}
+.avatar-box{
+    height: auto;
+}
 </style>
+
