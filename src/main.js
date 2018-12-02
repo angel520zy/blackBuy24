@@ -1,4 +1,3 @@
-/* eslint-disable */
 import Vue from "vue";
 import App from "./App.vue";
 
@@ -47,6 +46,9 @@ import login from "./components/05.login.vue";
 import payMoney from "./components/06.payMoney.vue";
 import paySuccess from "./components/07.paySuccess.vue";
 import vipCenter from "./components/08.vipCenter.vue";
+import orderList from "./components/09.orderList.vue";
+import orderDetail from "./components/10.orderDetail.vue";
+import orderIndex from "./components/11.index.vue";
 
 
 // 写路由规则
@@ -98,18 +100,41 @@ let routes = [
   {
     path: "/vipCenter",
     component: vipCenter,
-    meta: { checkLogin: true }
+    meta: { checkLogin: true },
+    children:[
+      {
+        path: "",
+        redirect: "index",
+      },
+      {
+        path: "index",
+        component: orderIndex,
+      },
+      {
+        path: "orderList",
+        component: orderList,
+      },
+      {
+        path: "orderDetail/:orderId",
+        component: orderDetail,
+      }
+      
+    ]
   },
 ];
 
+
 // 实例化路由对象
 let router = new VueRouter({
-  routes
+  routes,
+  scrollBehavior (to, from, savedPosition) {
+    return { x: 0, y: 0 }
+  }
 });
 // 导航守卫回调函数
 router.beforeEach((to, from, next)=>{
   //  console.log("守卫啦");
-  console.log(to)
+  // console.log(to)
   // if(to.path.indexOf("/order")!=-1){
     if(to.meta.checkLogin == true){
     axios.get("site/account/islogin").then(result=>{
@@ -124,7 +149,11 @@ router.beforeEach((to, from, next)=>{
     next();
   }
 
-})
+});
+// 路由跳转完毕触发
+// router.afterEach((to, from)=>{
+//   window.scrollTo(0,0)
+// })
  
 
 // 注册全局过滤器 方便使用
@@ -135,13 +164,17 @@ Vue.filter("shortTime", value => {
   // 处理时间数据
   // 返回处理之后的数据
   // 要显示什么 就返回什么
-  console.log(moment(value).format("YYYY😘MM😘DD👍"));
+  // console.log(moment(value).format("YYYY😘MM😘DD👍"));
   //   return '😁😁😁😁😁😁';
   return moment(value).format("YYYY🚲MM🚲DD🚲");
 });
 Vue.filter("shortTimePlus", value => {
   //   return '😁😁😁😁😁😁';
   return moment(value).format("YYYY/MM/DD HH:mm:ss");
+});
+Vue.filter("addSmlie", (value,smileType) => {
+  //   return '😁😁😁😁😁😁';
+  return value+smileType
 });
 
 
@@ -156,7 +189,7 @@ const store = new Vuex.Store({
   },
   getters: {
     totalCount(state){
-      console.log(state)
+      // console.log(state)
       let num=0;
       for(const key in state.cartData){
         num += state.cartData[key]

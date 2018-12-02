@@ -340,6 +340,9 @@ export default {
               this.$Message.success("订单提交成功");
               // 跳转路由
               this.$router.push("/payMoney/"+result.data.message.orderid);
+              this.goodsList.forEach(v=>{
+                this.$store.commit('delGoodsById',v.id);
+              })
             });
         } else {
           // console.log('error submit!!');

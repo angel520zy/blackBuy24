@@ -28,7 +28,13 @@
                                                     <router-link to="/vipCenter"> 会员中心</router-link>
                                                    
                                                     <!-- </a> -->
-                                                    查看订单状态！</p>
+                                                    <!-- 查看订单状态！ -->
+                                                </p>
+                                                <p>
+                                                    还有
+                                                    <span class="second">{{second}}</span>
+                                                    <span class="num">s</span>去首页
+                                                </p>
                                                 <p>如有其它问题，请立即与我们客服人员联系。</p>
                                             </div>
                                         </div>
